@@ -1,0 +1,3 @@
+@startuml
+struct UUID <<string-string-string-string>>
+@enduml

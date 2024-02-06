@@ -1,0 +1,16 @@
+@startuml
+interface TestUtils {
+    +createUUID(strictRandom: boolean): UUID
+
+    +createEntity(countChar: number): string // Description of some object
+    +createEntityRu(countChar: number, case: Case) // @param case means PADEJ in russian
+    +createFIO(): string
+    +createFIORu(case: Case): string
+
+
+    +createString(countChar: number): string // set of random chars
+    +createNumber(opts: any)
+
+    +comparePerformance(fn1: Function, fn2: Function): ComparedResult
+}
+@enduml

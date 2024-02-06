@@ -1,3 +1,5 @@
-import { userGreeting } from './src'
+import TestUtils from './src/TestUtils'
 
-userGreeting()
+console.log(TestUtils.createUUID(false))
+console.log(TestUtils.createUUID(false))
+console.log(TestUtils.createUUID(false))
