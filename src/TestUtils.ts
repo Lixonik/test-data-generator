@@ -15,6 +15,25 @@ export default class TestUtils {
         return TestUtils.generateUUIDFromCashedArray()
     }
 
+    static comparePerformance(...functions: Function[]) {
+        functions.forEach(fn => TestUtils.measurePerformance(fn))
+    }
+
+    private static measurePerformance(fn: Function) {
+        const count = 1_000
+
+        let all = [];
+        for (let i = 0; i < count; i++) {
+            performance.mark(`start ${fn.name}`);
+            fn()
+            performance.mark(`end ${fn.name}`)
+            performance.measure(`${fn.name}`, `start ${fn.name}`, `end ${fn.name}`)
+            all.push(performance.getEntriesByName(`${fn.name}`)[0].duration);
+        }
+
+        console.log(`${fn.name}: avg ${count} loops = ${all.reduce((acc, v) => acc + v, 0) / all.length} ms`)
+    }
+
     private static generateUUIDFromCashedArray(): UUID {
         const randomArray = TestUtils.cashed.array ?? randomArray16bytes()
 
