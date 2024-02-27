@@ -1,5 +1,8 @@
 import crypto from 'crypto'
 import { UUID } from 'node:crypto'
+import { Trie } from './trie/trie'
+import { PREFIXES, SUFFIXES, WORDS } from './en/constants'
+import { Nil } from './types'
 
 export const randomArray16bytes = (): Uint8Array => {
     const rnd8Pool = new Uint8Array(256)
@@ -14,10 +17,6 @@ for (let i = 0; i < 256; ++i) {
     byteToHex.push((i + 0x100).toString(16).slice(1))
 }
 
-/**
- *
- * @param array
- */
 export const arrayToUUID = (array: Uint8Array): UUID => (
     byteToHex[array[0]] +
     byteToHex[array[1]] +
@@ -47,9 +46,31 @@ export const arrayToUUID = (array: Uint8Array): UUID => (
  * https://www.freecodecamp.org/news/how-to-shuffle-an-array-of-items-using-javascript-or-typescript/
  * @param array
  */
-export const shuffleArray = (array: Uint8Array) => {
+export const shuffleUint8Array = (array: Uint8Array) => {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]]
     }
 }
+
+export function shuffleArray<T>(array: T[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]
+    }
+    return array
+}
+
+export const generatePreparedTrie: () => Trie = () => {
+    let trie = new Trie();
+
+    [
+        ...WORDS,
+        ...PREFIXES,
+        ...SUFFIXES,
+    ].forEach(word => trie.insert(word))
+
+    return trie
+}
+
+export const isNil = (value: unknown): value is Nil => value === undefined || value === null

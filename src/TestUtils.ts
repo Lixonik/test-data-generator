@@ -1,13 +1,14 @@
 import { randomUUID as nativeGenerator, UUID } from 'node:crypto'
-import { arrayToUUID, randomArray16bytes, shuffleArray } from './utils'
+import { arrayToUUID, generatePreparedTrie, randomArray16bytes, shuffleUint8Array } from './utils'
 import { CashedValues } from './types'
 
 export default class TestUtils {
     private static cashed: CashedValues = {
-        array: randomArray16bytes()
+        array: randomArray16bytes(),
+        trie: generatePreparedTrie(),
     }
 
-    static createUUID(strictRandom: boolean = false): UUID {
+    static generateUUID(strictRandom: boolean = false): UUID {
         if (strictRandom) return nativeGenerator()
 
         TestUtils.shuffleCashedArray()
@@ -22,13 +23,13 @@ export default class TestUtils {
     private static measurePerformance(fn: Function) {
         const count = 1_000
 
-        let all = [];
+        let all = []
         for (let i = 0; i < count; i++) {
-            performance.mark(`start ${fn.name}`);
+            performance.mark(`start ${fn.name}`)
             fn()
             performance.mark(`end ${fn.name}`)
             performance.measure(`${fn.name}`, `start ${fn.name}`, `end ${fn.name}`)
-            all.push(performance.getEntriesByName(`${fn.name}`)[0].duration);
+            all.push(performance.getEntriesByName(`${fn.name}`)[0].duration)
         }
 
         console.log(`${fn.name}: avg ${count} loops = ${all.reduce((acc, v) => acc + v, 0) / all.length} ms`)
@@ -45,6 +46,10 @@ export default class TestUtils {
     }
 
     private static shuffleCashedArray() {
-        shuffleArray(TestUtils.cashed.array)
+        shuffleUint8Array(TestUtils.cashed.array)
+    }
+
+    static generateMeaningfulString(length: number): string {
+        return this.cashed.trie.getRandomFullString(length)
     }
 }

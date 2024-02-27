@@ -1,6 +1,7 @@
 @startuml
 interface TestUtils {
     +createUUID(strictRandom: boolean): UUID
+    +createUUID()
 
     +createEntity(countChar: number): string // Description of some object
     +createEntityRu(countChar: number, case: Case) // @param case means PADEJ in russian
