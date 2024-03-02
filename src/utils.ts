@@ -1,7 +1,8 @@
 import crypto from 'crypto'
 import { UUID } from 'node:crypto'
 import { Trie } from './trie/trie'
-import { PREFIXES, SUFFIXES, WORDS } from './en/constants'
+import { PREFIXES as EN_PREFIXES, SUFFIXES as EN_SUFFIXES, WORDS as EN_WORDS } from './en/constants'
+import { PREFIXES as RUS_PREFIXES, SUFFIXES as RUS_SUFFIXES, WORDS as RUS_WORDS } from './rus/constants'
 import { Nil } from './types'
 
 export const randomArray16bytes = (): Uint8Array => {
@@ -64,11 +65,23 @@ export function shuffleArray<T>(array: T[]) {
 export const generatePreparedTrie: () => Trie = () => {
     let trie = new Trie();
 
-    [
-        ...WORDS,
-        ...PREFIXES,
-        ...SUFFIXES,
-    ].forEach(word => trie.insert(word))
+    trie.insertDictionary(EN_PREFIXES, EN_WORDS, EN_SUFFIXES)
+
+    return trie
+}
+
+export const generatePreparedRusTrie: () => Trie = () => {
+    let trie = new Trie();
+
+
+    trie.insertDictionary(RUS_PREFIXES, RUS_WORDS, RUS_SUFFIXES)
+
+
+    //[
+    //    //...RUS_PREFIXES,
+    //    ...RUS_WORDS,
+    //    ...RUS_SUFFIXES,
+    //].forEach(word => trie.insert(word))
 
     return trie
 }

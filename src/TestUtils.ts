@@ -1,11 +1,20 @@
 import { randomUUID as nativeGenerator, UUID } from 'node:crypto'
-import { arrayToUUID, generatePreparedTrie, randomArray16bytes, shuffleUint8Array } from './utils'
+import {
+    arrayToUUID,
+    generatePreparedRusTrie,
+    generatePreparedTrie,
+    randomArray16bytes,
+    shuffleUint8Array,
+} from './utils'
 import { CashedValues } from './types'
 
 export default class TestUtils {
     private static cashed: CashedValues = {
         array: randomArray16bytes(),
-        trie: generatePreparedTrie(),
+        tries: {
+            rus: generatePreparedRusTrie(),
+            en: generatePreparedTrie(),
+        },
     }
 
     static generateUUID(strictRandom: boolean = false): UUID {
@@ -49,7 +58,11 @@ export default class TestUtils {
         shuffleUint8Array(TestUtils.cashed.array)
     }
 
-    static generateMeaningfulString(length: number): string {
-        return this.cashed.trie.getRandomFullString(length)
+    static generateMeaningfulString(length: number, separator?: string): string {
+        return this.cashed.tries.en.getRandomFullString(length, separator)
+    }
+
+    static generateMeaningfulRusString(length: number, separator?: string): string {
+        return this.cashed.tries.rus.getRandomFullString(length, separator)
     }
 }

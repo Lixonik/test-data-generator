@@ -14,7 +14,7 @@ async function getShortEngWords(): Promise<string[]> {
     if (!response || !response.data) return []
 
     const shortWords = response.data.split('\n').filter((word: string) => {
-        return word.length >= 3 && word.length <= 5 && isValidWord(word)
+        return word.length === 5 && isValidWord(word)
     })
 
     return shortWords
