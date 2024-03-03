@@ -1,7 +1,6 @@
 import { isNil, shuffleArray } from '../utils'
-import { WORDS as RUS_WORDS } from '../rus/constants'
 
-class TrieNode {
+export class TrieNode {
     children: Map<string, TrieNode>
     isEndOfWord: boolean
     isPrefix: boolean
@@ -65,55 +64,32 @@ export class Trie {
         separator ??= ''
 
         const traverseTrie = (node: TrieNode, prefix: string) => {
-            lengthOfUpdatedWordsArray = [...wordsArray, prefix].join(separator).length
+            //console.log(wordsArray)
 
-            if (node.isEndOfWord && lengthOfUpdatedWordsArray <= length) {
+            if (node.isEndOfWord) {
+                lengthOfUpdatedWordsArray = [...wordsArray, prefix].join(separator).length
 
-                let lastElement = wordsArray.at(-1) ?? '666'
-                if (prefix.includes(lastElement)) {
-                    return
-                }
-
-                if (!node.isPrefix) {
+                if (lengthOfUpdatedWordsArray <= length) {
                     wordsArray.push(prefix)
-                    console.log(wordsArray)
-                }
-
-
-                if (isNil(node.children)) {
-                    console.log(node.children)
+                } else {
                     return
                 }
-
             }
-
-            //if (node.isEndOfWord && lengthOfUpdatedWordsArray <= length) {
-            //    //console.log([...wordsArray, prefix])
-            //    if (!prefix.indexOf(wordsArray[wordsArray.length - 1]) || wordsArray.length === 0) {
-            //        wordsArray.push(prefix)
-            //    }
-            //
-            //    if (isNil(node.children)) return
-            //    //const shuffledChildren = shuffleArray(Array.from(node.children.entries()))
-            //
-            //    Array.from(node.children.entries()).forEach(([char, child]) => traverseTrie(child, prefix + char))
-            //
-            //    //if (isNil(node.children)) {
-            //    //    traverseTrie(node.)
-            //    //}
-            //
-            //    //traverseTrie(node, prefix+node.children)
-            //}
-            const shuffledChildren = shuffleArray(Array.from(node.children.entries()))
-
-            shuffledChildren.forEach(([char, child]) => traverseTrie(child, prefix + char))
-
+            shuffledTraverse(node, prefix)
+            //traverseTrie(child, prefix + char)
         }
 
-            traverseTrie(this.root, '')
-        //while (wordsArray.length === 0) {
-        //    console.log('recursion')
-        //}
+        const shuffledTraverse = (node: TrieNode, prefix: string) => {
+            const shuffledChildren = shuffleArray(Array.from(node.children.entries()))
+
+            shuffledChildren.forEach(([char, child]) => {
+                traverseTrie(child, prefix + char)
+            })
+        }
+
+        //traverseTrie(this.root, '')
+
+        shuffledTraverse(this.root, '')
 
         const fullString = wordsArray.join(separator)
         const lengthDiff = length - fullString.length
@@ -181,5 +157,3 @@ export class Trie {
         }
     }
 }
-
-

@@ -87,3 +87,6 @@ export const generatePreparedRusTrie: () => Trie = () => {
 }
 
 export const isNil = (value: unknown): value is Nil => value === undefined || value === null
+
+export const isEmpty = (obj: any) =>
+    [Object, Array].includes((obj || {}).constructor) && !Object.entries(obj || {}).length
