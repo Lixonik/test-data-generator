@@ -1,2 +1,2 @@
 export * from './utils'
-export * from './TestUtils'
+export * from './test-utils'

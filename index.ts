@@ -1,4 +1,4 @@
-import TestUtils from './src/TestUtils'
+import TestUtils from './src/test-utils'
 
 //console.log(TestUtils.createUUID(false))
 //console.log(TestUtils.createUUID(false))

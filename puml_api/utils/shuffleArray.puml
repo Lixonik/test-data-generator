@@ -1,0 +1,13 @@
+@startuml
+title shuffleArray Function Activity Diagram
+
+start
+:initialize i to (array length - 1);
+while (i > 0) is (yes)
+  :generate a random index j\nwithin the range [0, i];
+  :swap the elements at\nindices i and j;
+  :decrement i;
+endwhile (no)
+:Return shuffled array;
+stop
+@enduml
