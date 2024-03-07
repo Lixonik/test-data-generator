@@ -1,8 +1,8 @@
 import crypto from 'crypto'
 import { UUID } from 'node:crypto'
 import { Trie } from './trie/trie'
-import { PREFIXES as EN_PREFIXES, SUFFIXES as EN_SUFFIXES, WORDS as EN_WORDS } from './en/constants'
-import { PREFIXES as RUS_PREFIXES, SUFFIXES as RUS_SUFFIXES, WORDS as RUS_WORDS } from './rus/constants'
+import { PREFIXES as EN_PREFIXES, SUFFIXES as EN_SUFFIXES, WORDS as EN_WORDS } from './locales/en/constants'
+import { PREFIXES as RUS_PREFIXES, SUFFIXES as RUS_SUFFIXES, WORDS as RUS_WORDS } from './locales/rus/constants'
 import { Nil } from './types'
 
 export const randomArray16bytes = (): Uint8Array => {

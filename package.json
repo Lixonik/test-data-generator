@@ -7,7 +7,7 @@
     "manual": "ts-node ./index.ts",
     "make": "npx tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "file": "ts-node src/rus/totototot.ts"
+    "file": "ts-node src/locales/rus/totototot.ts"
   },
   "repository": {
     "type": "git",
