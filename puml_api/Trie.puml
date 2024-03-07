@@ -1,0 +1,24 @@
+@startuml
+
+class TrieNode {
+    children: Map<string, TrieNode>
+    isEndOfWord: boolean
+    constructor()
+}
+
+class Trie {
+    -root: TrieNode
+    constructor()
+    insert(word: string)
+    insertDictionary(prefixes: string[], roots: string[], suffixes: string[])
+    search(word: string): boolean
+    delete(word: string): boolean
+    +getRandomFullString(length: number, separator: string): string
+    -insertAfterNode(root: TrieNode, word: string)
+    -insertAllAfterNode(root: TrieNode, words: string[])
+    -findTails(): TrieNode[]
+}
+
+Trie --> TrieNode : contains
+
+@enduml

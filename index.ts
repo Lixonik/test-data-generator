@@ -13,3 +13,5 @@ const weak = () => TestUtils.generateUUID(false)
 
 
 console.log(TestUtils.generateMeaningfulString(50, ' '))
+
+console.log(TestUtils.generateUUID(true))

@@ -11,7 +11,7 @@ export const WORDS = [
 ]
 
 
-import roots from './roots.json'
+//import roots from './roots.json'
 
 //export const WORDS = roots
 

@@ -1,14 +1,13 @@
 import { isNil, shuffleArray } from '../utils'
+import { StackItem } from '../types'
 
 export class TrieNode {
     children: Map<string, TrieNode>
     isEndOfWord: boolean
-    isPrefix: boolean
 
     constructor() {
         this.children = new Map<string, TrieNode>()
         this.isEndOfWord = false
-        this.isPrefix = false
     }
 }
 
@@ -24,21 +23,11 @@ export class Trie {
     }
 
     insertDictionary(prefixes: string[], roots: string[], suffixes: string[]) {
-        this.insertAllIntoOrigin(prefixes, true)
+        this.insertAllIntoOrigin(prefixes)
         this.insertAllIntoTails(roots)
         this.insertAllIntoTails(suffixes)
     }
 
-    private insertAllIntoOrigin(words: string[], isPrefix?: boolean) {
-        this.insertAllAfterNode(this.root, words, isPrefix)
-    }
-
-
-    private insertAllIntoTails(words: string[]) {
-        const tails = this.findTails()
-
-        tails.forEach(tail => this.insertAllAfterNode(tail, words))
-    }
 
     search(word: string): boolean {
         let current = this.root
@@ -55,52 +44,91 @@ export class Trie {
     }
 
     delete(word: string): boolean {
-        return this.deleteRecursive(this.root, word, 0)
+        let current = this.root
+        let parentsStack = []
+        for (let i = 0; i < word.length; i++) {
+            let ch = word[i]
+            parentsStack.push(current)
+
+            if (!current.children.has(ch)) {
+                return false
+            }
+            current = current.children.get(ch)!
+        }
+
+        if (!current.isEndOfWord) {
+            return false
+        }
+
+        current.isEndOfWord = false
+        let isLeaf = current.children.size === 0
+
+        for (let i = word.length - 1; i >= 0; i--) {
+            let ch = word[i]
+            let parent = parentsStack.pop()!
+
+            if (isLeaf) {
+                parent.children.delete(ch)
+            }
+
+            isLeaf = parent.children.size === 0 && !parent.isEndOfWord
+            if (!isLeaf) {
+                break
+            }
+        }
+
+        return true
     }
 
-    getRandomFullString(length: number, separator?: string): string {
-        const wordsArray: string[] = []
-        let lengthOfUpdatedWordsArray: number = 0
-        separator ??= ''
+    private insertAllIntoOrigin(words: string[]) {
+        this.insertAllAfterNode(this.root, words)
+    }
 
-        const traverseTrie = (node: TrieNode, prefix: string) => {
-            //console.log(wordsArray)
+
+    private insertAllIntoTails(words: string[]) {
+        const tails = this.findTails()
+
+        tails.forEach(tail => this.insertAllAfterNode(tail, words))
+    }
+
+    /**
+     * DFS approach based on stack (if you exchange a stack for a queue it will be BFS)
+     * @param length
+     * @param separator
+     */
+
+    getRandomFullString(length: number, separator: string = ''): string {
+        const stack: StackItem[] = [{ node: this.root, word: '', accumulatedLength: 0 }]
+        const wordsArray: string[] = []
+
+        while (stack.length > 0 && wordsArray.join(separator).length < length) {
+            const { node, word, accumulatedLength }: StackItem = stack.pop()!
 
             if (node.isEndOfWord) {
-                lengthOfUpdatedWordsArray = [...wordsArray, prefix].join(separator).length
+                const newWord = `${wordsArray.join(separator)}${separator}${word}`
 
-                if (lengthOfUpdatedWordsArray <= length) {
-                    wordsArray.push(prefix)
+                if (newWord.length <= length) {
+                    wordsArray.push(word)
                 } else {
-                    return
+                    break
                 }
             }
-            shuffledTraverse(node, prefix)
-            //traverseTrie(child, prefix + char)
-        }
 
-        const shuffledTraverse = (node: TrieNode, prefix: string) => {
             const shuffledChildren = shuffleArray(Array.from(node.children.entries()))
 
-            shuffledChildren.forEach(([char, child]) => {
-                traverseTrie(child, prefix + char)
-            })
+            for (const [char, nextNode] of shuffledChildren) {
+                stack.push({
+                    node: nextNode,
+                    word: word + char,
+                    accumulatedLength: accumulatedLength + char.length,
+                })
+            }
         }
 
-        //traverseTrie(this.root, '')
-
-        shuffledTraverse(this.root, '')
-
-        const fullString = wordsArray.join(separator)
-        const lengthDiff = length - fullString.length
-
-        return lengthDiff === 0
-            ? fullString
-            // 2nd level of recursion
-            : `${fullString}${separator}${this.getRandomFullString(lengthDiff, separator)}`
+        return wordsArray.join(separator).substring(0, length)
     }
 
-    private insertAfterNode(root: TrieNode, word: string, isPrefix?: boolean) {
+    private insertAfterNode(root: TrieNode, word: string) {
         let current = root
         for (let i = 0; i < word.length; i++) {
             let ch = word.charAt(i)
@@ -112,48 +140,28 @@ export class Trie {
             current = node
         }
         current.isEndOfWord = true
-        current.isPrefix = isPrefix ?? false
     }
 
-    private insertAllAfterNode(root: TrieNode, words: string[], isPrefix?: boolean) {
-        words.forEach(word => this.insertAfterNode(root, word, isPrefix ?? false))
-    }
-
-    private deleteRecursive(current: TrieNode, word: string, index: number): boolean {
-        if (index === word.length) {
-            if (!current.isEndOfWord) {
-                return false
-            }
-            current.isEndOfWord = false
-            return current.children.size === 0
-        }
-        let ch = word.charAt(index)
-        let node = current.children.get(ch)
-        if (isNil(node)) {
-            return false
-        }
-        let shouldDeleteCurrentNode = this.deleteRecursive(node, word, index + 1)
-
-        if (shouldDeleteCurrentNode) {
-            current.children.delete(ch)
-            return current.children.size === 0
-        }
-        return false
+    private insertAllAfterNode(root: TrieNode, words: string[]) {
+        words.forEach(word => this.insertAfterNode(root, word))
     }
 
     private findTails(): TrieNode[] {
         let tails: TrieNode[] = []
-        this.findTailsRecursive(this.root, tails)
+        let stack: TrieNode[] = [this.root]
+
+        while (stack.length > 0) {
+            let node = stack.pop()!
+
+            if (node.isEndOfWord) {
+                tails.push(node)
+            }
+
+            for (let child of node.children.values()) {
+                stack.push(child)
+            }
+        }
 
         return tails
-    }
-
-    private findTailsRecursive(node: TrieNode, tails: TrieNode[]) {
-        if (node.isEndOfWord) {
-            tails.push(node)
-        }
-        for (let child of node.children.values()) {
-            this.findTailsRecursive(child, tails)
-        }
     }
 }

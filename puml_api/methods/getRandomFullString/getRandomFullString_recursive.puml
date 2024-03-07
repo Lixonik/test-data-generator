@@ -1,0 +1,39 @@
+@startuml
+title getRandomFullString Recursive Method Activity Diagram
+
+start
+
+:Initialize wordsArray as empty array;
+:Initialize lengthOfUpdatedWordsArray as 0;
+:Set separator default if not provided;
+
+partition traverseTrie {
+  :Check if node is end of word;
+  if (Is end of word?) then (yes)
+    :Update lengthOfUpdatedWordsArray;
+    if (lengthOfUpdatedWordsArray <= length) then (yes)
+      :Push prefix to wordsArray;
+    else (no)
+      :Return;
+    endif
+  endif
+}
+
+partition shuffledTraverse {
+  :Shuffle children of the current node;
+  :Iterate over shuffled children; foreach (child in shuffledChildren) is (do) -> traverseTrie;
+}
+
+-> traverseTrie;
+:Join wordsArray with separator to form fullString;
+:Determine length difference between desired and current;
+
+if (Is exact length?) then (yes)
+  :Return fullString;
+else (no)
+  -> Call getRandomFullString recursively to fill the remaining length difference;
+  :Return concatenated result;
+endif
+
+stop
+@enduml

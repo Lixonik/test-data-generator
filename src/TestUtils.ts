@@ -1,4 +1,4 @@
-import { randomUUID as nativeGenerator, UUID } from 'node:crypto'
+import { v4 as uuidGenerator } from 'uuid'
 import {
     arrayToUUID,
     generatePreparedRusTrie,
@@ -6,23 +6,13 @@ import {
     randomArray16bytes,
     shuffleUint8Array,
 } from './utils'
-import { CashedValues } from './types'
+import { CashedValues, UUID } from './types'
 
 export default class TestUtils {
-    private static cashed: CashedValues = {
-        array: randomArray16bytes(),
-        tries: {
-            rus: generatePreparedRusTrie(),
-            en: generatePreparedTrie(),
-        },
-    }
-
-    static generateUUID(strictRandom: boolean = false): UUID {
-        if (strictRandom) return nativeGenerator()
-
-        TestUtils.shuffleCashedArray()
-
-        return TestUtils.generateUUIDFromCashedArray()
+    private static cashedArrayForUUID = randomArray16bytes()
+    private static tries = {
+        rus: generatePreparedRusTrie(),
+        en: generatePreparedTrie(),
     }
 
     static comparePerformance(...functions: Function[]) {
@@ -44,8 +34,17 @@ export default class TestUtils {
         console.log(`${fn.name}: avg ${count} loops = ${all.reduce((acc, v) => acc + v, 0) / all.length} ms`)
     }
 
+    static generateUUID(strictRandom: boolean = false): UUID {
+        if (strictRandom) return uuidGenerator() as UUID
+
+        TestUtils.shuffleCashedArray()
+
+        return TestUtils.generateUUIDFromCashedArray()
+    }
+
+
     private static generateUUIDFromCashedArray(): UUID {
-        const randomArray = TestUtils.cashed.array ?? randomArray16bytes()
+        const randomArray = TestUtils.cashedArrayForUUID ?? randomArray16bytes()
 
         // set bits for v4 and `clock_seq_hi_and_reserved`
         randomArray[6] = (randomArray[6] & 0x0f) | 0x40
@@ -55,14 +54,14 @@ export default class TestUtils {
     }
 
     private static shuffleCashedArray() {
-        shuffleUint8Array(TestUtils.cashed.array)
+        shuffleUint8Array(TestUtils.cashedArrayForUUID)
     }
 
     static generateMeaningfulString(length: number, separator?: string): string {
-        return this.cashed.tries.en.getRandomFullString(length, separator)
+        return this.tries.en.getRandomFullString(length, separator)
     }
 
     static generateMeaningfulRusString(length: number, separator?: string): string {
-        return this.cashed.tries.rus.getRandomFullString(length, separator)
+        return this.tries.rus.getRandomFullString(length, separator)
     }
 }

@@ -73,15 +73,7 @@ export const generatePreparedTrie: () => Trie = () => {
 export const generatePreparedRusTrie: () => Trie = () => {
     let trie = new Trie();
 
-
     trie.insertDictionary(RUS_PREFIXES, RUS_WORDS, RUS_SUFFIXES)
-
-
-    //[
-    //    //...RUS_PREFIXES,
-    //    ...RUS_WORDS,
-    //    ...RUS_SUFFIXES,
-    //].forEach(word => trie.insert(word))
 
     return trie
 }
