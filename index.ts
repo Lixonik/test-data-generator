@@ -14,4 +14,12 @@ const weak = () => TestUtils.generateUUID(false)
 
 //console.log(TestUtils.generateMeaningfulString(50, ' '))
 
-console.log(TestUtils.generateUUID(true))
+//for (let i = 0; i < 4195; i++) {
+//    console.log(TestUtils.generateUUID())
+//}
+
+console.log(TestUtils.generateRuFIO({
+    type: 'surname',
+    length: 'extra_large',
+    gender: 'male'
+}, 'dative'))
