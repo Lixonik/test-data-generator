@@ -18,8 +18,10 @@ const weak = () => TestUtils.generateUUID(false)
 //    console.log(TestUtils.generateUUID())
 //}
 
-console.log(TestUtils.generateRuFIO({
+console.log(TestUtils.generatePerson({
     type: 'surname',
     length: 'extra_large',
-    gender: 'male'
-}, 'dative'))
+    gender: 'male',
+    language: 'rus',
+    padej: 'dative'
+}))

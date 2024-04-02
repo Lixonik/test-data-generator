@@ -18,9 +18,32 @@ export type StackItem = { node: TrieNode, word: string, accumulatedLength: numbe
  * length = 'extra-larger depends on last name
  */
 export type PartNameOpts = {
-    length: 'small' | 'medium' | 'large' | 'extra_large'
     gender: 'male' | 'female'
     type: 'name' | 'surname' | 'patronymic'
+    length?: 'small' | 'medium' | 'large' | 'extra_large'
+    language?: 'en' | 'rus'
+    padej?: Case
 }
 
-export type Case = 'nominative' | 'genitive' | 'dative' | 'accusative' | 'instrumental' | 'prepositional';
+export type Case = 'nominative' | 'genitive' | 'dative' | 'accusative' | 'instrumental' | 'prepositional'
+
+export type NameData = {
+    male: {
+        small: string[]
+        medium: string[]
+        large: string[]
+        extra_large: string[]
+    };
+    female: {
+        small: string[]
+        medium: string[]
+        large: string[]
+        extra_large: string[]
+    };
+}
+
+export type PersonsList = {
+    name: NameData
+    surname: NameData
+    patronymic: NameData
+}

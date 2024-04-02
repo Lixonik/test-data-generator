@@ -3,7 +3,9 @@ import {
     generatePreparedRusTrie,
     generatePreparedTrie,
 } from './utils'
-import { Case, CashedValues, PartNameOpts, UUID } from './types'
+import { Case, CashedValues, PartNameOpts, PersonsList, UUID } from './types'
+import PERSONS_RU from './persons/rus/persons.json'
+import PERSONS_EN from './persons/en/persons.json'
 
 export default class TestUtils {
     private static tries = {
@@ -12,6 +14,8 @@ export default class TestUtils {
     }
 
     private static uuidCounter = 0
+    private static personsListRu: PersonsList = PERSONS_RU
+    private static personsListEn: PersonsList = PERSONS_EN
 
     static comparePerformance(...functions: Function[]) {
         functions.forEach(fn => TestUtils.measurePerformance(fn))
@@ -80,117 +84,6 @@ export default class TestUtils {
      * opts = { gender, middle,  }
      */
 
-
-    static generateFIO({ type, length, gender }: PartNameOpts): string {
-        const names = {
-            male: {
-                small: ['Tom', 'Max', 'Ian'],
-                medium: ['James', 'Robert', 'Edward'],
-                large: ['Christopher', 'Alexander', 'Benjamin'],
-                extra_large: ['Alexander', 'Maximilian', 'Nathaniel'],
-            },
-            female: {
-                small: ['Eve', 'Ada', 'Mia'],
-                medium: ['Emma', 'Olivia', 'Sophia'],
-                large: ['Charlotte', 'Margaret', 'Elizabeth'],
-                extra_large: ['Alexandria', 'Theodora', 'Florentina'],
-            },
-        }
-
-        const surnames = {
-            male: {
-                small: ['Fox', 'Shaw', 'Day'],
-                medium: ['Johnson', 'Thompson', 'Hamilton'],
-                large: ['Montgomery', 'Wellington', 'Underwood'],
-                extra_large: ['Cunningham', 'Blackwood', 'Fitzgerald'],
-            },
-            female: {
-                small: ['May', 'Rose', 'Wu'],
-                medium: ['Miller', 'Stevens', 'Adams'],
-                large: ['Chamberlain', 'Middleton', 'Windsor'],
-                extra_large: ['Cunningham', 'Blackwood', 'Fitzgerald'],
-            },
-        }
-
-        // In English tradition, patronymic-like names can be middle names often passed down from a family member.
-        const middleNames = {
-            male: {
-                small: ['Jay', 'Lee', 'Kai'],
-                medium: ['Michael', 'William', 'Thomas'],
-                large: ['Alexander', 'Jeremiah', 'Nathaniel'],
-                extra_large: ['Christopher', 'Maximilian', 'Theodore'],
-            },
-            female: {
-                small: ['Lynn', 'Ann', 'Jade'],
-                medium: ['Marie', 'Grace', 'Jane'],
-                large: ['Elizabeth', 'Joanna', 'Catherine'],
-                extra_large: ['Alexandra', 'Victoria', 'Josephine'],
-            },
-        }
-
-        // Choose the correct list based on the type and gender
-        let chosenList
-        switch (type) {
-            case 'name':
-                chosenList = names[gender][length]
-                break
-            case 'surname':
-                chosenList = surnames[gender][length]
-                break
-            case 'patronymic': // English doesn't have true patronymics, so using middle names instead
-                chosenList = middleNames[gender][length]
-                break
-        }
-
-        // Get a random index to pick an item from the list
-        const randomIndex = Math.floor(Math.random() * chosenList.length)
-        return chosenList[randomIndex]
-    }
-
-    static dataLists = {
-        name: {
-            male: {
-                small: ['Иван', 'Алексей', 'Борис'],
-                medium: ['Михаил', 'Сергей'],
-                large: ['Владимир', 'Александр'],
-                extra_large: ['Артемий', 'Анатолий']
-            },
-            female: {
-                small: ['Мария', 'Екатерина', 'Дарья'],
-                medium: ['Анастасия', 'Ирина'],
-                large: ['Виктория', 'Евгения'],
-                extra_large: ['Светлана', 'Людмила']
-            },
-        },
-        surname: {
-            male: {
-                small: ['Смирнов', 'Иванов', 'Кузнецов'],
-                medium: ['Попов', 'Соколов'],
-                large: ['Лебедев', 'Новиков'],
-                extra_large: ['Морозов', 'Васильев']
-            },
-            female: {
-                small: ['Смирнова', 'Иванова', 'Кузнецова'],
-                medium: ['Попова', 'Соколова'],
-                large: ['Лебедева', 'Новикова'],
-                extra_large: ['Морозова', 'Васильева']
-            },
-        },
-        patronymic: {
-            male: {
-                small: ['Петрович', 'Иванович'],
-                medium: ['Алексеевич', 'Сергеевич'],
-                large: ['Владимирович', 'Дмитриевич'],
-                extra_large: ['Николаевич', 'Тимофеевич']
-            },
-            female: {
-                small: ['Петровна', 'Ивановна'],
-                medium: ['Алексеевна', 'Сергеевна'],
-                large: ['Владимировна', 'Дмитриевна'],
-                extra_large: ['Николаевна', 'Тимофеевна']
-            },
-        },
-    }
 
     /**
      * Declines the given Russian word based on its type and case.
@@ -286,15 +179,29 @@ export default class TestUtils {
      * @param opts - Options object for length, gender, and type of name component
      * @param padej - The grammatical case in Russian
      */
-    static generateRuFIO({ type, length, gender }: PartNameOpts, padej: Case): string {
-        // Access the appropriate list based on the provided opts
-        const lengthList = this.dataLists[type][gender][length] || this.dataLists[type][gender]['medium'];
+    static generatePerson({ type, length, gender, padej, language }: PartNameOpts): string {
+        padej ??= 'nominative'
+        length ??= 'medium'
+        language ??= 'en'
 
+        let lengthList: string[]
+        // Access the appropriate list based on the provided opts
+
+        switch (language) {
+            case 'rus':
+                lengthList = this.personsListRu[type][gender][length] || this.personsListRu[type][gender]['medium'];
+                break
+            case 'en':
+                lengthList = this.personsListEn[type][gender][length] || this.personsListEn[type][gender]['medium'];
+                break
+            default:
+                throw new Error('undefined language')
+        }
         // Choose a random name, surname or patronymic based on length and gender
         const chosenWord = lengthList[Math.floor(Math.random() * lengthList.length)];
 
         // Decline the chosen word according to the specified case.
-        return this.declineWord(chosenWord, type, gender, padej);
+        return language === 'rus' ? this.declineWord(chosenWord, type, gender, padej) : chosenWord
     }
 
 }
