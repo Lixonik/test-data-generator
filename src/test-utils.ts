@@ -1,15 +1,17 @@
 import { v4 as uuidGenerator } from 'uuid'
 import {
+    mergeInitValueWithPartialOpts,
     generatePreparedRusTrie,
     generatePreparedTrie,
 } from './utils'
-import { Case, CashedValues, PartNameOpts, PersonsList, UUID } from './types'
-import PERSONS_RU from './persons/rus/persons.json'
+import { Case, NumberOpts, PartNameOpts, PersonsList, StringOpts, UUID } from './types'
+import PERSONS_RU from './persons/ru/persons.json'
 import PERSONS_EN from './persons/en/persons.json'
+import { initGenNumberOpts, initGenPartNameOpts, initGenStringOpts } from './constants'
 
 export default class TestUtils {
     private static tries = {
-        rus: generatePreparedRusTrie(),
+        ru: generatePreparedRusTrie(),
         en: generatePreparedTrie(),
     }
 
@@ -77,7 +79,7 @@ export default class TestUtils {
     }
 
     static generateMeaningfulRusString(length: number, separator?: string): string {
-        return this.tries.rus.getRandomFullString(length, separator)
+        return this.tries.ru.getRandomFullString(length, separator)
     }
 
     /**
@@ -87,14 +89,12 @@ export default class TestUtils {
 
     /**
      * Declines the given Russian word based on its type and case.
-     * Important: This is a simplified example; real declension uses complex rules and exceptions.
      * @param word The word to decline.
      * @param type The type of the word (name, surname, or patronymic).
      * @param gender The gender of the person (male or female).
      * @param padej The grammatical case to decline into.
      */
     private static declineWord(word: string, type: 'name' | 'surname' | 'patronymic', gender: 'male' | 'female', padej: Case): string {
-        // Simplified declension rules. Needs to be expanded with appropriate logic.
         const declensionRules = {
             name: {
                 'male': {
@@ -152,7 +152,6 @@ export default class TestUtils {
             },
         }
 
-        // Decline based on the identified rules.
         if (declensionRules[type][gender][padej]) {
             let suffix = declensionRules[type][gender][padej]
 
@@ -172,48 +171,63 @@ export default class TestUtils {
             return word + suffix
         }
 
-        return word // No declension rule applicable, return the word as is (e.g., for foreign or neutral names).
+        return word
     }
 
     /**
      * @param opts - Options object for length, gender, and type of name component
      * @param padej - The grammatical case in Russian
      */
-    static generatePerson({ type, length, gender, padej, language }: PartNameOpts): string {
-        padej ??= 'nominative'
-        length ??= 'medium'
-        language ??= 'en'
+    static generatePerson(opts: Partial<PartNameOpts> = {}): string {
+        const { type, length, gender, padej, language } = mergeInitValueWithPartialOpts(opts, initGenPartNameOpts)
 
         let lengthList: string[]
-        // Access the appropriate list based on the provided opts
 
         switch (language) {
-            case 'rus':
-                lengthList = this.personsListRu[type][gender][length] || this.personsListRu[type][gender]['medium'];
+            case 'ru':
+                lengthList = this.personsListRu[type][gender][length]
                 break
             case 'en':
-                lengthList = this.personsListEn[type][gender][length] || this.personsListEn[type][gender]['medium'];
+                lengthList = this.personsListEn[type][gender][length]
                 break
             default:
                 throw new Error('undefined language')
         }
         // Choose a random name, surname or patronymic based on length and gender
-        const chosenWord = lengthList[Math.floor(Math.random() * lengthList.length)];
+        const chosenWord = lengthList[Math.floor(Math.random() * lengthList.length)]
 
         // Decline the chosen word according to the specified case.
-        return language === 'rus' ? this.declineWord(chosenWord, type, gender, padej) : chosenWord
+        return language === 'ru' ? this.declineWord(chosenWord, type, gender, padej) : chosenWord
     }
 
-}
+    static generateRandomString(opts: Partial<StringOpts> = {}): string {
+        const { charSet, length }: StringOpts = mergeInitValueWithPartialOpts(opts, initGenStringOpts)
 
-type StringOpts = {
-    charSet: string[] // char set
-    length: number
-}
 
-type NumberOpts = {
-    min: number
-    max: number
+        const charSetLength = charSet.length
+        const buffer = new Uint8Array(length)
+        crypto.getRandomValues(buffer)
+
+        let result = ''
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(buffer[i] / 256 * charSetLength)
+            result += charSet[randomIndex]
+        }
+
+        return result
+    }
+
+    static generateRandomNumber(opts: Partial<NumberOpts> = {}): number {
+        const { min, max }: NumberOpts = mergeInitValueWithPartialOpts(opts, initGenNumberOpts)
+
+        if (max < min) {
+            throw new Error('the maximum limit must be greater than the minimum!')
+        }
+
+        const range = max - min + 1
+        return Math.floor(Math.random() * range) + min
+    }
+
 }
 
 type ComparedResult = {

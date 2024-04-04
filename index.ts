@@ -18,10 +18,19 @@ const weak = () => TestUtils.generateUUID(false)
 //    console.log(TestUtils.generateUUID())
 //}
 
+console.log(TestUtils.generatePerson())
+
 console.log(TestUtils.generatePerson({
-    type: 'surname',
-    length: 'extra_large',
-    gender: 'male',
-    language: 'rus',
-    padej: 'dative'
+
+}))
+
+console.log(TestUtils.generatePerson({
+    language: 'ru'
+}))
+
+
+console.log(TestUtils.generateRandomString({
+}))
+
+console.log(TestUtils.generateRandomNumber({
 }))

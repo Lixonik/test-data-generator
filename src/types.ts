@@ -3,7 +3,7 @@ import { Trie, TrieNode } from './trie/trie'
 export type CashedValues = {
     cashedArrayForUUID: Uint8Array
     tries: {
-        rus: Trie,
+        ru: Trie,
         en: Trie
     }
 }
@@ -20,9 +20,9 @@ export type StackItem = { node: TrieNode, word: string, accumulatedLength: numbe
 export type PartNameOpts = {
     gender: 'male' | 'female'
     type: 'name' | 'surname' | 'patronymic'
-    length?: 'small' | 'medium' | 'large' | 'extra_large'
-    language?: 'en' | 'rus'
-    padej?: Case
+    length: 'small' | 'medium' | 'large' | 'extra_large'
+    language: 'en' | 'ru'
+    padej: Case
 }
 
 export type Case = 'nominative' | 'genitive' | 'dative' | 'accusative' | 'instrumental' | 'prepositional'
@@ -46,4 +46,14 @@ export type PersonsList = {
     name: NameData
     surname: NameData
     patronymic: NameData
+}
+
+export type StringOpts = {
+    charSet: string[] | string // char set
+    length: number
+}
+
+export type NumberOpts = {
+    min: number
+    max: number
 }
