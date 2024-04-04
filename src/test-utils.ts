@@ -83,16 +83,7 @@ export default class TestUtils {
     }
 
     /**
-     * opts = { gender, middle,  }
-     */
-
-
-    /**
      * Declines the given Russian word based on its type and case.
-     * @param word The word to decline.
-     * @param type The type of the word (name, surname, or patronymic).
-     * @param gender The gender of the person (male or female).
-     * @param padej The grammatical case to decline into.
      */
     private static declineWord(word: string, type: 'name' | 'surname' | 'patronymic', gender: 'male' | 'female', padej: Case): string {
         const declensionRules = {
