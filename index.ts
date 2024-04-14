@@ -1,7 +1,3 @@
-//console.log(TestUtils.createUUID(false))
-//console.log(TestUtils.createUUID(false))
-//console.log(TestUtils.createUUID(false))
-
 import { generatePerson, generateRandomNumber, generateRandomString, generateUUID } from './src'
 
 const string = () => generateUUID(true)
