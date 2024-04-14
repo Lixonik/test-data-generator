@@ -1,7 +1,8 @@
 import { Trie } from './trie/trie'
-import { PREFIXES as EN_PREFIXES, SUFFIXES as EN_SUFFIXES, WORDS as EN_WORDS } from './locales/en/constants'
-import { PREFIXES as RUS_PREFIXES, SUFFIXES as RUS_SUFFIXES, WORDS as RUS_WORDS } from './locales/ru/constants'
-import { Nil } from './types'
+import { PREFIXES as EN_PREFIXES, SUFFIXES as EN_SUFFIXES, WORDS as EN_WORDS } from './locales/en/dictionary'
+import { PREFIXES as RU_PREFIXES, SUFFIXES as RU_SUFFIXES, WORDS as RU_WORDS } from './locales/ru/dictionary'
+import { ClassFields, Nil, NumberOpts, PartNameOpts, StringOpts } from './types'
+import { ENGLISH_ALPHABET } from './constants'
 
 /**
  * Fisher-Yates Sorting Algorithm
@@ -27,7 +28,7 @@ export const generatePreparedTrie: () => Trie = () => {
 export const generatePreparedRusTrie: () => Trie = () => {
     let trie = new Trie()
 
-    trie.insertDictionary(RUS_PREFIXES, RUS_WORDS, RUS_SUFFIXES)
+    trie.insertDictionary(RU_PREFIXES, RU_WORDS, RU_SUFFIXES)
 
     return trie
 }
@@ -39,3 +40,33 @@ export const isNil = (value: unknown): value is Nil => value === undefined || va
 export const isDefined = <T>(value: T | Nil): value is T => !isNil(value)
 
 export const mergeInitValueWithPartialOpts = <T extends object>(partialOpts: Partial<T>, initOpts: T): T => Object.assign(Object.create(initOpts.constructor.prototype), { ...initOpts, ...partialOpts })
+
+export class CPartNameOpts {
+    gender: PartNameOpts['gender'] = 'male'
+    type: PartNameOpts['type'] = 'surname'
+    length: PartNameOpts['length'] = 'medium'
+    language: PartNameOpts['language'] = 'en'
+    padej: PartNameOpts['padej'] = 'nominative'
+
+    constructor(opts: Partial<ClassFields<CPartNameOpts>>) {
+        Object.assign(this, opts)
+    }
+}
+
+export class CStringOpts {
+    charSet: StringOpts['charSet']= ENGLISH_ALPHABET
+    length: StringOpts['length']= 5
+
+    constructor(opts: Partial<ClassFields<CStringOpts>>) {
+        Object.assign(this, opts)
+    }
+}
+
+export class CNumberOpts {
+    min: NumberOpts['min'] = 0
+    max: NumberOpts['max'] = 100
+
+    constructor(opts: Partial<ClassFields<CNumberOpts>>) {
+        Object.assign(this, opts)
+    }
+}

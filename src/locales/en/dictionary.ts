@@ -1,4 +1,3 @@
-//import dictionary from './dictionary.json'
 
 export const SUFFIXES =
     [

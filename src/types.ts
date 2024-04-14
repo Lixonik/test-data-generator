@@ -1,4 +1,5 @@
 import { Trie, TrieNode } from './trie/trie'
+import { ENGLISH_ALPHABET } from './constants'
 
 export type CashedValues = {
     cashedArrayForUUID: Uint8Array
@@ -23,6 +24,10 @@ export type PartNameOpts = {
     length: 'small' | 'medium' | 'large' | 'extra_large'
     language: 'en' | 'ru'
     padej: Case
+}
+
+export type ClassFields<Model> = {
+    [field in keyof Model as Model[field] extends (...args: any[]) => any ? never : field]: Model[field]
 }
 
 export type Case = 'nominative' | 'genitive' | 'dative' | 'accusative' | 'instrumental' | 'prepositional'

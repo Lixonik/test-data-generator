@@ -1,11 +1,11 @@
-import TestUtils from './src/test-utils'
-
 //console.log(TestUtils.createUUID(false))
 //console.log(TestUtils.createUUID(false))
 //console.log(TestUtils.createUUID(false))
 
-const string = () => TestUtils.generateUUID(true)
-const weak = () => TestUtils.generateUUID(false)
+import { generatePerson, generateRandomNumber, generateRandomString, generateUUID } from './src'
+
+const string = () => generateUUID(true)
+const weak = () => generateUUID(false)
 
 //TestUtils.comparePerformance(
 //    string, weak
@@ -18,19 +18,19 @@ const weak = () => TestUtils.generateUUID(false)
 //    console.log(TestUtils.generateUUID())
 //}
 
-console.log(TestUtils.generatePerson())
+console.log(generatePerson())
 
-console.log(TestUtils.generatePerson({
+console.log(generatePerson({
 
 }))
 
-console.log(TestUtils.generatePerson({
+console.log(generatePerson({
     language: 'ru'
 }))
 
 
-console.log(TestUtils.generateRandomString({
+console.log(generateRandomString({
 }))
 
-console.log(TestUtils.generateRandomNumber({
+console.log(generateRandomNumber({
 }))
