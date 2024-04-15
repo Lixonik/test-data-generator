@@ -1,5 +1,4 @@
 import { Trie, TrieNode } from './trie/trie'
-import { ENGLISH_ALPHABET } from './constants'
 
 export type CashedValues = {
     cashedArrayForUUID: Uint8Array
