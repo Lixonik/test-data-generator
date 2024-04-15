@@ -1,6 +1,6 @@
 import { v4 as uuidGenerator } from 'uuid'
 import {
-    generatePreparedRusTrie,
+    generatePreparedRuTrie,
     generatePreparedTrie, CPartNameOpts, CStringOpts, CNumberOpts,
 } from './utils'
 import {
@@ -15,7 +15,7 @@ import { PERSONS as PERSONS_EN } from './persons/en/persons'
 
 
 const tries = {
-    ru: generatePreparedRusTrie(),
+    ru: generatePreparedRuTrie(),
     en: generatePreparedTrie(),
 }
 
@@ -47,8 +47,35 @@ export const generateMeaningfulString = (length: number, separator?: string): st
     return tries.en.getRandomFullString(length, separator)
 }
 
-export const generateMeaningfulRusString = (length: number, separator?: string): string => {
+export const generateMeaningfulRuString = (length: number, separator?: string): string => {
     return tries.ru.getRandomFullString(length, separator)
+}
+
+export const generateRandomString = (opts: Partial<StringOpts> = {}): string => {
+    const { charSet, length }: StringOpts = new CStringOpts(opts)
+
+    const charSetLength = charSet.length
+    const buffer = new Uint8Array(length)
+    crypto.getRandomValues(buffer)
+
+    let result = ''
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(buffer[i] / 256 * charSetLength)
+        result += charSet[randomIndex]
+    }
+
+    return result
+}
+
+export const generateRandomNumber = (opts: Partial<NumberOpts> = {}): number => {
+    const { min, max }: NumberOpts = new CNumberOpts(opts)
+
+    if (max < min) {
+        throw new Error('the maximum limit must be greater than the minimum!')
+    }
+
+    const range = max - min + 1
+    return Math.floor(Math.random() * range) + min
 }
 
 /**
@@ -159,31 +186,3 @@ export const generatePerson = (opts: Partial<PartNameOpts> = {}): string => {
     // Decline the chosen word according to the specified case.
     return language === 'ru' ? declineWord(chosenWord, type, gender, padej) : chosenWord
 }
-
-export const generateRandomString = (opts: Partial<StringOpts> = {}): string => {
-    const { charSet, length }: StringOpts = new CStringOpts(opts)
-
-    const charSetLength = charSet.length
-    const buffer = new Uint8Array(length)
-    crypto.getRandomValues(buffer)
-
-    let result = ''
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(buffer[i] / 256 * charSetLength)
-        result += charSet[randomIndex]
-    }
-
-    return result
-}
-
-export const generateRandomNumber = (opts: Partial<NumberOpts> = {}): number => {
-    const { min, max }: NumberOpts = new CNumberOpts(opts)
-
-    if (max < min) {
-        throw new Error('the maximum limit must be greater than the minimum!')
-    }
-
-    const range = max - min + 1
-    return Math.floor(Math.random() * range) + min
-}
-

@@ -25,7 +25,7 @@ export const generatePreparedTrie: () => Trie = () => {
     return trie
 }
 
-export const generatePreparedRusTrie: () => Trie = () => {
+export const generatePreparedRuTrie: () => Trie = () => {
     let trie = new Trie()
 
     trie.insertDictionary(RU_PREFIXES, RU_WORDS, RU_SUFFIXES)
