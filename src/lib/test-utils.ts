@@ -43,20 +43,18 @@ export const generateUUID = (strictRandom: boolean = false): UUID => {
 	return customUUID
 }
 
-export const generateMeaningfulString = (opts: Partial<MeaningfulStringOpts> = {}): string => {
-	const { length, separator, language } = new CMeaningfulStringOpts(opts)
+export const generateNumber = (opts: Partial<NumberOpts> = {}): number => {
+	const { min, max }: NumberOpts = new CNumberOpts(opts)
 
-	switch (language) {
-		case 'en':
-			return tries.en.getRandomFullString(length, separator)
-		case 'ru':
-			return tries.ru.getRandomFullString(length, separator)
-		default:
-			throw new Error(`Unsupported language: ${language}`)
+	if (max < min) {
+		throw new Error('the maximum limit must be greater than the minimum!')
 	}
+
+	const range = max - min + 1
+	return Math.floor(Math.random() * range) + min
 }
 
-export const generateRandomString = (opts: Partial<StringOpts> = {}): string => {
+export const generateString = (opts: Partial<StringOpts> = {}): string => {
 	const { charSet, length }: StringOpts = new CStringOpts(opts)
 
 	const charSetLength = charSet.length
@@ -70,17 +68,6 @@ export const generateRandomString = (opts: Partial<StringOpts> = {}): string => 
 	}
 
 	return result
-}
-
-export const generateRandomNumber = (opts: Partial<NumberOpts> = {}): number => {
-	const { min, max }: NumberOpts = new CNumberOpts(opts)
-
-	if (max < min) {
-		throw new Error('the maximum limit must be greater than the minimum!')
-	}
-
-	const range = max - min + 1
-	return Math.floor(Math.random() * range) + min
 }
 
 /**
@@ -107,6 +94,19 @@ export const generatePerson = (opts: Partial<PartNameOpts> = {}): string => {
 
 	// Decline the chosen word according to the specified case.
 	return language === 'ru' ? declineWord(chosenWord, type, gender, padej) : chosenWord
+}
+
+export const generateMeaningfulString = (opts: Partial<MeaningfulStringOpts> = {}): string => {
+	const { length, separator, language } = new CMeaningfulStringOpts(opts)
+
+	switch (language) {
+		case 'en':
+			return tries.en.getRandomFullString(length, separator)
+		case 'ru':
+			return tries.ru.getRandomFullString(length, separator)
+		default:
+			throw new Error(`Unsupported language: ${language}`)
+	}
 }
 
 /**
