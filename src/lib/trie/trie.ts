@@ -28,62 +28,9 @@ export class Trie {
         this.insertAllIntoTails(suffixes)
     }
 
-
-    search(word: string): boolean {
-        let current = this.root
-        for (let i = 0; i < word.length; i++) {
-            let ch = word.charAt(i)
-            let node = current.children.get(ch)
-            if (isNil(node)) {
-                return false
-            }
-            current = node
-        }
-
-        return current.isEndOfWord
-    }
-
-    delete(word: string): boolean {
-        let current = this.root
-        let parentsStack = []
-        for (let i = 0; i < word.length; i++) {
-            let ch = word[i]
-            parentsStack.push(current)
-
-            if (!current.children.has(ch)) {
-                return false
-            }
-            current = current.children.get(ch)!
-        }
-
-        if (!current.isEndOfWord) {
-            return false
-        }
-
-        current.isEndOfWord = false
-        let isLeaf = current.children.size === 0
-
-        for (let i = word.length - 1; i >= 0; i--) {
-            let ch = word[i]
-            let parent = parentsStack.pop()!
-
-            if (isLeaf) {
-                parent.children.delete(ch)
-            }
-
-            isLeaf = parent.children.size === 0 && !parent.isEndOfWord
-            if (!isLeaf) {
-                break
-            }
-        }
-
-        return true
-    }
-
     private insertAllIntoOrigin(words: string[]) {
         this.insertAllAfterNode(this.root, words)
     }
-
 
     private insertAllIntoTails(words: string[]) {
         const tails = this.findTails()
@@ -92,7 +39,7 @@ export class Trie {
     }
 
     /**
-     * DFS approach based on stack (if you exchange a stack for a queue it will be BFS)
+     * DFS approach based on stack (if you exchange a stack for a queue it will be BFS :D)
      * @param length
      * @param separator
      */
