@@ -1,7 +1,7 @@
 import { Trie } from './trie/trie'
 import { PREFIXES as EN_PREFIXES, SUFFIXES as EN_SUFFIXES, WORDS as EN_WORDS } from './locales/en/dictionary'
 import { PREFIXES as RU_PREFIXES, SUFFIXES as RU_SUFFIXES, WORDS as RU_WORDS } from './locales/ru/dictionary'
-import { ClassFields, Nil, NumberOpts, PartNameOpts, StringOpts } from './types'
+import { ClassFields, Language, MeaningfulStringOpts, Nil, NumberOpts, PartNameOpts, StringOpts } from './types'
 import { ENGLISH_ALPHABET } from './constants'
 
 /**
@@ -41,8 +41,8 @@ export const isDefined = <T>(value: T | Nil): value is T => !isNil(value)
 
 export const mergeInitValueWithPartialOpts = <T extends object>(partialOpts: Partial<T>, initOpts: T): T => Object.assign(Object.create(initOpts.constructor.prototype), { ...initOpts, ...partialOpts })
 
-export class CPartNameOpts {
-    gender: PartNameOpts['gender'] = 'male'
+export class CPartNameOpts implements PartNameOpts {
+    gender: PartNameOpts['gender']= 'male'
     type: PartNameOpts['type'] = 'surname'
     length: PartNameOpts['length'] = 'medium'
     language: PartNameOpts['language'] = 'en'
@@ -53,20 +53,30 @@ export class CPartNameOpts {
     }
 }
 
-export class CStringOpts {
-    charSet: StringOpts['charSet']= ENGLISH_ALPHABET
-    length: StringOpts['length']= 5
+export class CStringOpts implements StringOpts {
+    charSet: StringOpts['charSet'] = ENGLISH_ALPHABET
+    length: StringOpts['length'] = 5
 
     constructor(opts: Partial<ClassFields<CStringOpts>>) {
         Object.assign(this, opts)
     }
 }
 
-export class CNumberOpts {
-    min: NumberOpts['min'] = 0
-    max: NumberOpts['max'] = 100
+export class CNumberOpts implements NumberOpts {
+    min = 0
+    max = 100
 
     constructor(opts: Partial<ClassFields<CNumberOpts>>) {
+        Object.assign(this, opts)
+    }
+}
+
+export class CMeaningfulStringOpts implements MeaningfulStringOpts {
+    length = 5
+    language: Language = 'en'
+    separator = ''
+
+    constructor(opts: Partial<ClassFields<CMeaningfulStringOpts>>) {
         Object.assign(this, opts)
     }
 }

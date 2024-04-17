@@ -1,7 +1,6 @@
-import { NumberOpts, PartNameOpts, StringOpts, UUID } from './types';
+import { MeaningfulStringOpts, NumberOpts, PartNameOpts, StringOpts, UUID } from './types';
 export declare const generateUUID: (strictRandom?: boolean) => UUID;
-export declare const generateMeaningfulString: (length: number, separator?: string) => string;
-export declare const generateMeaningfulRuString: (length: number, separator?: string) => string;
+export declare const generateMeaningfulString: (opts?: Partial<MeaningfulStringOpts>) => string;
 export declare const generateRandomString: (opts?: Partial<StringOpts>) => string;
 export declare const generateRandomNumber: (opts?: Partial<NumberOpts>) => number;
 /**

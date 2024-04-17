@@ -13,6 +13,7 @@ export type StackItem = {
     word: string;
     accumulatedLength: number;
 };
+export type Language = 'en' | 'ru';
 /**
  * length = 'extra-larger depends on last name
  */
@@ -20,7 +21,7 @@ export type PartNameOpts = {
     gender: 'male' | 'female';
     type: 'name' | 'surname' | 'patronymic';
     length: 'small' | 'medium' | 'large' | 'extra_large';
-    language: 'en' | 'ru';
+    language: Language;
     padej: Case;
 };
 export type ClassFields<Model> = {
@@ -41,11 +42,6 @@ export type NameData = {
         extra_large: string[];
     };
 };
-export type PersonsList = {
-    name: NameData;
-    surname: NameData;
-    patronymic: NameData;
-};
 export type StringOpts = {
     charSet: string[] | string;
     length: number;
@@ -53,4 +49,9 @@ export type StringOpts = {
 export type NumberOpts = {
     min: number;
     max: number;
+};
+export type MeaningfulStringOpts = {
+    length: number;
+    separator: string;
+    language: Language;
 };
