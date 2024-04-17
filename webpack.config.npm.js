@@ -15,7 +15,7 @@ module.exports = {
         use: [{
           loader: 'ts-loader',
           options: {
-              configFile: "tsconfig.webpack.json"
+              configFile: "tsconfig.json"
           }
         }],
         exclude: /node_modules/,
@@ -26,6 +26,6 @@ module.exports = {
     extensions: ['.ts', '.js'],
   },
   optimization: {
-    minimize: false,
+    minimize: true,
   },
 };
