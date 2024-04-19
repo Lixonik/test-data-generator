@@ -1,5 +1,8 @@
 import { isNil, shuffleArray } from '../utils'
 import { StackItem } from '../types'
+import { TsWorker } from '../workers/ts-worker';
+import { TsWorkerJob } from '../workers/ts-worker-job';
+import { TsWorkerEvent } from '../workers/types';
 
 export class TrieNode {
 	children: Map<string, TrieNode>
@@ -8,6 +11,32 @@ export class TrieNode {
 	constructor() {
 		this.children = new Map<string, TrieNode>()
 		this.isEndOfWord = false
+	}
+}
+
+function wordSearchByTreeTraverse(stack: StackItem[], wordsArray: string[], separator: string, length: number): void {
+	while (stack.length > 0 && wordsArray.join(separator).length < length) {
+		const { node, word, accumulatedLength }: StackItem = stack.pop()!;
+
+		if (node.isEndOfWord) {
+			const newWord = `${wordsArray.join(separator)}${separator}${word}`;
+
+			if (newWord.length <= length) {
+				wordsArray.push(word);
+			} else {
+				break;
+			}
+		}
+
+		const shuffledChildren = shuffleArray(Array.from(node.children.entries()));
+
+		for (const [char, nextNode] of shuffledChildren) {
+			stack.push({
+				node: nextNode,
+				word: word + char,
+				accumulatedLength: accumulatedLength + char.length,
+			});
+		}
 	}
 }
 
@@ -48,29 +77,32 @@ export class Trie {
 		const stack: StackItem[] = [{ node: this.root, word: '', accumulatedLength: 0 }]
 		const wordsArray: string[] = []
 
-		while (stack.length > 0 && wordsArray.join(separator).length < length) {
-			const { node, word, accumulatedLength }: StackItem = stack.pop()!
+		const worker = new TsWorker()
 
-			if (node.isEndOfWord) {
-				const newWord = `${wordsArray.join(separator)}${separator}${word}`
+		const searchJob = new TsWorkerJob((args: any[]) => {
+			return new Promise<any>((resolve, reject) => {
+				// because args is an array you need to use indexes.
+				const time = args[0];
+				console.log(`caculate anything...`);
+				setTimeout(() => {
+					resolve(42);
+				}, time);
+			});
+		}, [3000]);
 
-				if (newWord.length <= length) {
-					wordsArray.push(word)
-				} else {
-					break
-				}
-			}
+		// run the job asynchronous
+		worker.run(searchJob).then((ev: TsWorkerEvent) => {
+			// finished
+			const secondsLeft = (ev!.statistics!.ended - ev!.statistics!.started) / 1000;
+			console.log(`the result is ${ev.result}`);
+			console.log(`time left for calculation: ${secondsLeft}`);
+		}).catch((error) => {
+			// error
+			console.log(`error`);
+			console.error(error);
+		});
 
-			const shuffledChildren = shuffleArray(Array.from(node.children.entries()))
-
-			for (const [char, nextNode] of shuffledChildren) {
-				stack.push({
-					node: nextNode,
-					word: word + char,
-					accumulatedLength: accumulatedLength + char.length,
-				})
-			}
-		}
+		wordSearchByTreeTraverse(stack, wordsArray, separator, length);
 
 		return wordsArray.join(separator).substring(0, length)
 	}
