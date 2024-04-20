@@ -49,6 +49,7 @@
   },
   "sideEffects": false,
   "dependencies": {
+    "rxjs": "^7.8.1",
     "uuid": "^9.0.1"
   }
 }
