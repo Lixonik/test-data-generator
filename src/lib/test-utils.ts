@@ -1,7 +1,7 @@
 import { v4 as uuidGenerator } from 'uuid'
 import {
 	generatePreparedRuTrie,
-	generatePreparedTrie, CPartNameOpts, CStringOpts, CNumberOpts, CMeaningfulStringOpts,
+	generatePreparedTrie,
 } from './utils'
 import {
 	Case, MeaningfulStringOpts,
@@ -12,6 +12,7 @@ import {
 } from './types'
 import { PERSONS as PERSONS_RU } from './persons/ru/persons'
 import { PERSONS as PERSONS_EN } from './persons/en/persons'
+import { CMeaningfulStringOpts, CNumberOpts, CPartNameOpts, CStringOpts } from './init-classes';
 
 
 const tries = {
