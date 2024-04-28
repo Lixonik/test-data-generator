@@ -1,19 +1,18 @@
 import { v4 as uuidGenerator } from 'uuid'
 import {
-	generatePreparedRuTrie,
-	generatePreparedTrie,
+    generatePreparedRuTrie,
+    generatePreparedTrie,
 } from './utils'
 import {
-	Case, MeaningfulStringOpts,
-	NumberOpts,
-	PartNameOpts,
-	StringOpts,
-	UUID,
+    MeaningfulStringOpts,
+    NumberOpts,
+    PartNameOpts,
+    StringOpts,
+    UUID,
 } from './types'
 import { PERSONS as PERSONS_RU } from './persons/ru/persons'
 import { PERSONS as PERSONS_EN } from './persons/en/persons'
-import { CMeaningfulStringOpts, CNumberOpts, CPartNameOpts, CStringOpts } from './init-classes';
-
+import { CMeaningfulStringOpts, CNumberOpts, CPartNameOpts, CStringOpts } from './init-classes'
 
 const tries = {
 	ru: generatePreparedRuTrie(),
@@ -21,54 +20,55 @@ const tries = {
 }
 
 let uuidCounter = 0
+
 const personsListRu = PERSONS_RU
 const personsListEn = PERSONS_EN
 
 export const generateUUID = (strictRandom: boolean = false): UUID => {
-	if (strictRandom) return uuidGenerator() as UUID
+    if (strictRandom) return uuidGenerator() as UUID
 
-	let currentUuidCounter = uuidCounter.toString(16)
+    let currentUuidCounter = uuidCounter.toString(16)
 
-	uuidCounter++
+    uuidCounter++
 
-	if (uuidCounter === 4096) {
-		uuidCounter = 0
-	}
+    if (uuidCounter === 4096) {
+        uuidCounter = 0
+    }
 
-	const counterString = currentUuidCounter.padStart(3, '0')
+    const counterString = currentUuidCounter.padStart(3, '0')
 
-	const baseUUID: UUID = 'f-ffff-ffff-ffff-ffffffffffff'
+    const baseUUID: UUID = 'f-ffff-ffff-ffff-ffffffffffff'
 
-	const customUUID: UUID = `${counterString}${baseUUID}` as UUID
+    const customUUID: UUID = `${counterString}${baseUUID}` as UUID
 
-	return customUUID
+    return customUUID
 }
 
 export const generateNumber = (opts: Partial<NumberOpts> = {}): number => {
-	const { min, max }: NumberOpts = new CNumberOpts(opts)
+    const { min, max }: NumberOpts = new CNumberOpts(opts)
 
-	if (max < min) {
-		throw new Error('the maximum limit must be greater than the minimum!')
-	}
+    if (max < min) {
+        throw new Error('the maximum limit must be greater than the minimum!')
+    }
 
-	const range = max - min + 1
-	return Math.floor(Math.random() * range) + min
+    const range = max - min + 1
+    return Math.floor(Math.random() * range) + min
 }
 
 export const generateString = (opts: Partial<StringOpts> = {}): string => {
-	const { charSet, length }: StringOpts = new CStringOpts(opts)
+    const { charSet, length }: StringOpts = new CStringOpts(opts)
 
-	const charSetLength = charSet.length
-	const buffer = new Uint8Array(length)
-	crypto.getRandomValues(buffer)
+    const charSetLength = charSet.length
+    const buffer = new Uint8Array(length)
+    crypto.getRandomValues(buffer)
 
-	let result = ''
-	for (let i = 0; i < length; i++) {
-		const randomIndex = Math.floor(buffer[i] / 256 * charSetLength)
-		result += charSet[randomIndex]
-	}
+    let result = ''
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(buffer[i] / 256 * charSetLength)
+        result += charSet[randomIndex]
+    }
 
-	return result
+    return result
 }
 
 /**
@@ -98,97 +98,97 @@ export const generatePerson = (opts: Partial<PartNameOpts> = {}): string => {
 }
 
 export const generateMeaningfulString = (opts: Partial<MeaningfulStringOpts> = {}): string => {
-	const { length, separator, language } = new CMeaningfulStringOpts(opts)
+    const { length, separator, language } = new CMeaningfulStringOpts(opts)
 
-	switch (language) {
-		case 'en':
-			return tries.en.getRandomFullString(length, separator)
-		case 'ru':
-			return tries.ru.getRandomFullString(length, separator)
-		default:
-			throw new Error(`Unsupported language: ${language}`)
-	}
+    switch (language) {
+        case 'en':
+            return tries.en.getRandomFullString(length, separator)
+        case 'ru':
+            return tries.ru.getRandomFullString(length, separator)
+        default:
+            throw new Error(`Unsupported language: ${language}`)
+    }
 }
 
 /**
  * Declines the given Russian word based on its type and case.
  */
-const declineWord = (word: string, type: 'name' | 'surname' | 'patronymic', gender: 'male' | 'female', padej: Case): string => {
-	const declensionRules = {
-		name: {
-			'male': {
-				nominative: '',   // Иван
-				genitive: 'а',    // Ивана
-				dative: 'у',      // Ивану
-				accusative: 'а',  // Ивана
-				instrumental: 'ом', // Иваном
-				prepositional: 'е', // Иване
-			},
-			'female': {
-				nominative: '',    // Мария
-				genitive: 'и',     // Марии
-				dative: 'и',       // Марии
-				accusative: 'ю',   // Марию
-				instrumental: 'ей', // Марией
-				prepositional: 'и', // Марии
-			},
-		},
-		surname: {
-			'male': {
-				nominative: '',   // Смирнов
-				genitive: 'а',    // Смирнова
-				dative: 'у',      // Смирнову
-				accusative: 'а',  // Смирнова
-				instrumental: 'ом', // Смирновым
-				prepositional: 'е', // Смирнове
-			},
-			'female': {
-				nominative: '',    // Смирнова
-				genitive: 'ой',    // Смирновой
-				dative: 'ой',      // Смирновой
-				accusative: 'у',   // Смирнову
-				instrumental: 'ой', // Смирновой
-				prepositional: 'ой', // Смирновой
-			},
-		},
-		patronymic: {
-			'male': {
-				nominative: '',   // Петрович
-				genitive: 'а',    // Петровича
-				dative: 'у',      // Петровичу
-				accusative: 'а',  // Петровича
-				instrumental: 'ем', // Петровичем
-				prepositional: 'е', // Петровиче
-			},
-			'female': {
-				nominative: '',    // Петровна
-				genitive: 'ы',     // Петровны
-				dative: 'е',       // Петровне
-				accusative: 'у',   // Петровну
-				instrumental: 'ой', // Петровной
-				prepositional: 'е', // Петровне
-			},
-		},
-	}
+const declineWord = (word: string, type: PartNameOpts['type'], gender: PartNameOpts['gender'], padej: PartNameOpts['padej']): string => {
+    const declensionRules = {
+        name: {
+            'male': {
+                nominative: '',   // Иван
+                genitive: 'а',    // Ивана
+                dative: 'у',      // Ивану
+                accusative: 'а',  // Ивана
+                instrumental: 'ом', // Иваном
+                prepositional: 'е', // Иване
+            },
+            'female': {
+                nominative: '',    // Мария
+                genitive: 'и',     // Марии
+                dative: 'и',       // Марии
+                accusative: 'ю',   // Марию
+                instrumental: 'ей', // Марией
+                prepositional: 'и', // Марии
+            },
+        },
+        surname: {
+            'male': {
+                nominative: '',   // Смирнов
+                genitive: 'а',    // Смирнова
+                dative: 'у',      // Смирнову
+                accusative: 'а',  // Смирнова
+                instrumental: 'ом', // Смирновым
+                prepositional: 'е', // Смирнове
+            },
+            'female': {
+                nominative: '',    // Смирнова
+                genitive: 'ой',    // Смирновой
+                dative: 'ой',      // Смирновой
+                accusative: 'у',   // Смирнову
+                instrumental: 'ой', // Смирновой
+                prepositional: 'ой', // Смирновой
+            },
+        },
+        patronymic: {
+            'male': {
+                nominative: '',   // Петрович
+                genitive: 'а',    // Петровича
+                dative: 'у',      // Петровичу
+                accusative: 'а',  // Петровича
+                instrumental: 'ем', // Петровичем
+                prepositional: 'е', // Петровиче
+            },
+            'female': {
+                nominative: '',    // Петровна
+                genitive: 'ы',     // Петровны
+                dative: 'е',       // Петровне
+                accusative: 'у',   // Петровну
+                instrumental: 'ой', // Петровной
+                prepositional: 'е', // Петровне
+            },
+        },
+    }
 
-	if (declensionRules[type][gender][padej]) {
-		let suffix = declensionRules[type][gender][padej]
+    if (declensionRules[type][gender][padej]) {
+        let suffix = declensionRules[type][gender][padej]
 
-		if (type === 'name') {
-			if (['ий', 'ия'].includes(word.slice(-2)) && gender === 'male' && padej !== 'nominative') {
-				return `${word.slice(0, -2)}и${suffix}`
-			}
-			if (['ия'].includes(word.slice(-2)) && gender === 'female' && padej !== 'nominative') {
-				return `${word.slice(0, -1)}${suffix}`
-			}
-			if (['genitive', 'dative', 'instrumental', 'prepositional'].includes(padej) && ['й', 'ь'].includes(word.slice(-1))) {
-				return `${word.slice(0, -1)}${suffix}`
-			}
-		}
+        if (type === 'name') {
+            if (['ий', 'ия'].includes(word.slice(-2)) && gender === 'male' && padej !== 'nominative') {
+                return `${word.slice(0, -2)}и${suffix}`
+            }
+            if (['ия'].includes(word.slice(-2)) && gender === 'female' && padej !== 'nominative') {
+                return `${word.slice(0, -1)}${suffix}`
+            }
+            if (['genitive', 'dative', 'instrumental', 'prepositional'].includes(padej) && ['й', 'ь'].includes(word.slice(-1))) {
+                return `${word.slice(0, -1)}${suffix}`
+            }
+        }
 
-		// Names ending with a consonant need to be softened in some cases
-		return word + suffix
-	}
+        // Names ending with a consonant need to be softened in some cases
+        return word + suffix
+    }
 
-	return word
+    return word
 }
