@@ -1,7 +1,7 @@
+import { ClassFields, Language, MeaningfulStringOpts, NumberOpts, PartNameOpts, StringOpts } from './types';
 /**
  * initialization classes
  */
-import { ClassFields, Language, MeaningfulStringOpts, NumberOpts, PartNameOpts, StringOpts } from './types';
 export declare class CPartNameOpts implements PartNameOpts {
     gender: PartNameOpts['gender'];
     type: PartNameOpts['type'];
