@@ -1,31 +1,21 @@
-import { v4 as uuidGenerator } from 'uuid'
-import {
-    generatePreparedRuTrie,
-    generatePreparedTrie,
-} from './utils'
-import {
-    MeaningfulStringOpts,
-    NumberOpts,
-    PartNameOpts,
-    StringOpts,
-    UUID,
-} from './types'
+import { declineWord, generatePreparedRuTrie, generatePreparedTrie } from './utils'
+import { MeaningfulStringOpts, NumberOpts, PartNameOpts, StringOpts, UUID } from './types'
 import { PERSONS as PERSONS_RU } from './persons/ru/persons'
 import { PERSONS as PERSONS_EN } from './persons/en/persons'
 import { CMeaningfulStringOpts, CNumberOpts, CPartNameOpts, CStringOpts } from './init-classes'
 
 const tries = {
-	ru: generatePreparedRuTrie(),
-	en: generatePreparedTrie(),
+    ru: generatePreparedRuTrie(),
+    en: generatePreparedTrie(),
 }
 
-let uuidCounter = 0
 
 const personsListRu = PERSONS_RU
 const personsListEn = PERSONS_EN
 
+let uuidCounter = 0
 export const generateUUID = (strictRandom: boolean = false): UUID => {
-    if (strictRandom) return uuidGenerator() as UUID
+    if (strictRandom) return crypto.randomUUID()
 
     let currentUuidCounter = uuidCounter.toString(16)
 
@@ -76,25 +66,25 @@ export const generateString = (opts: Partial<StringOpts> = {}): string => {
  * @param padej - The grammatical case in Russian
  */
 export const generatePerson = (opts: Partial<PartNameOpts> = {}): string => {
-	const { type, length, gender, padej, language } = new CPartNameOpts(opts)
+    const { type, length, gender, padej, language } = new CPartNameOpts(opts)
 
-	let lengthList: string[]
+    let lengthList: string[]
 
-	switch (language) {
-		case 'ru':
-			lengthList = personsListRu[type][gender][length]
-			break
-		case 'en':
-			lengthList = personsListEn[type][gender][length]
-			break
-		default:
-			throw new Error('undefined language')
-	}
-	// Choose a random name, surname or patronymic based on length and gender
-	const chosenWord = lengthList[Math.floor(Math.random() * lengthList.length)]
+    switch (language) {
+        case 'ru':
+            lengthList = personsListRu[type][gender][length]
+            break
+        case 'en':
+            lengthList = personsListEn[type][gender][length]
+            break
+        default:
+            throw new Error('undefined language')
+    }
+    // Choose a random name, surname or patronymic based on length and gender
+    const chosenWord = lengthList[Math.floor(Math.random() * lengthList.length)]
 
-	// Decline the chosen word according to the specified case.
-	return language === 'ru' ? declineWord(chosenWord, type, gender, padej) : chosenWord
+    // Decline the chosen word according to the specified case.
+    return language === 'ru' ? declineWord(chosenWord, type, gender, padej) : chosenWord
 }
 
 export const generateMeaningfulString = (opts: Partial<MeaningfulStringOpts> = {}): string => {
@@ -108,87 +98,4 @@ export const generateMeaningfulString = (opts: Partial<MeaningfulStringOpts> = {
         default:
             throw new Error(`Unsupported language: ${language}`)
     }
-}
-
-/**
- * Declines the given Russian word based on its type and case.
- */
-const declineWord = (word: string, type: PartNameOpts['type'], gender: PartNameOpts['gender'], padej: PartNameOpts['padej']): string => {
-    const declensionRules = {
-        name: {
-            'male': {
-                nominative: '',   // Иван
-                genitive: 'а',    // Ивана
-                dative: 'у',      // Ивану
-                accusative: 'а',  // Ивана
-                instrumental: 'ом', // Иваном
-                prepositional: 'е', // Иване
-            },
-            'female': {
-                nominative: '',    // Мария
-                genitive: 'и',     // Марии
-                dative: 'и',       // Марии
-                accusative: 'ю',   // Марию
-                instrumental: 'ей', // Марией
-                prepositional: 'и', // Марии
-            },
-        },
-        surname: {
-            'male': {
-                nominative: '',   // Смирнов
-                genitive: 'а',    // Смирнова
-                dative: 'у',      // Смирнову
-                accusative: 'а',  // Смирнова
-                instrumental: 'ом', // Смирновым
-                prepositional: 'е', // Смирнове
-            },
-            'female': {
-                nominative: '',    // Смирнова
-                genitive: 'ой',    // Смирновой
-                dative: 'ой',      // Смирновой
-                accusative: 'у',   // Смирнову
-                instrumental: 'ой', // Смирновой
-                prepositional: 'ой', // Смирновой
-            },
-        },
-        patronymic: {
-            'male': {
-                nominative: '',   // Петрович
-                genitive: 'а',    // Петровича
-                dative: 'у',      // Петровичу
-                accusative: 'а',  // Петровича
-                instrumental: 'ем', // Петровичем
-                prepositional: 'е', // Петровиче
-            },
-            'female': {
-                nominative: '',    // Петровна
-                genitive: 'ы',     // Петровны
-                dative: 'е',       // Петровне
-                accusative: 'у',   // Петровну
-                instrumental: 'ой', // Петровной
-                prepositional: 'е', // Петровне
-            },
-        },
-    }
-
-    if (declensionRules[type][gender][padej]) {
-        let suffix = declensionRules[type][gender][padej]
-
-        if (type === 'name') {
-            if (['ий', 'ия'].includes(word.slice(-2)) && gender === 'male' && padej !== 'nominative') {
-                return `${word.slice(0, -2)}и${suffix}`
-            }
-            if (['ия'].includes(word.slice(-2)) && gender === 'female' && padej !== 'nominative') {
-                return `${word.slice(0, -1)}${suffix}`
-            }
-            if (['genitive', 'dative', 'instrumental', 'prepositional'].includes(padej) && ['й', 'ь'].includes(word.slice(-1))) {
-                return `${word.slice(0, -1)}${suffix}`
-            }
-        }
-
-        // Names ending with a consonant need to be softened in some cases
-        return word + suffix
-    }
-
-    return word
 }

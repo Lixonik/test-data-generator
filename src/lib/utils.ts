@@ -1,8 +1,7 @@
 import { Trie } from './trie/trie'
 import { PREFIXES as EN_PREFIXES, SUFFIXES as EN_SUFFIXES, WORDS as EN_WORDS } from './locales/en/dictionary'
 import { PREFIXES as RU_PREFIXES, SUFFIXES as RU_SUFFIXES, WORDS as RU_WORDS } from './locales/ru/dictionary'
-import { ClassFields, Language, MeaningfulStringOpts, Nil, NumberOpts, PartNameOpts, StringOpts } from './types'
-import { ENGLISH_ALPHABET } from './constants'
+import { Nil, PartNameOpts } from './types'
 
 /**
  * Fisher-Yates Sorting Algorithm
@@ -32,11 +31,89 @@ export const generatePreparedRuTrie: () => Trie = () => {
 
     return trie
 }
-export const isEmpty = (obj: any) =>
-    [Object, Array].includes((obj || {}).constructor) && !Object.entries(obj || {}).length
+
+/**
+ * Declines the given Russian word based on its type and case.
+ */
+export const declineWord = (word: string, type: PartNameOpts['type'], gender: PartNameOpts['gender'], padej: PartNameOpts['padej']): string => {
+    const declensionRules = {
+        name: {
+            'male': {
+                nominative: '',   // Иван
+                genitive: 'а',    // Ивана
+                dative: 'у',      // Ивану
+                accusative: 'а',  // Ивана
+                instrumental: 'ом', // Иваном
+                prepositional: 'е', // Иване
+            },
+            'female': {
+                nominative: '',    // Мария
+                genitive: 'и',     // Марии
+                dative: 'и',       // Марии
+                accusative: 'ю',   // Марию
+                instrumental: 'ей', // Марией
+                prepositional: 'и', // Марии
+            },
+        },
+        surname: {
+            'male': {
+                nominative: '',   // Смирнов
+                genitive: 'а',    // Смирнова
+                dative: 'у',      // Смирнову
+                accusative: 'а',  // Смирнова
+                instrumental: 'ом', // Смирновым
+                prepositional: 'е', // Смирнове
+            },
+            'female': {
+                nominative: '',    // Смирнова
+                genitive: 'ой',    // Смирновой
+                dative: 'ой',      // Смирновой
+                accusative: 'у',   // Смирнову
+                instrumental: 'ой', // Смирновой
+                prepositional: 'ой', // Смирновой
+            },
+        },
+        patronymic: {
+            'male': {
+                nominative: '',   // Петрович
+                genitive: 'а',    // Петровича
+                dative: 'у',      // Петровичу
+                accusative: 'а',  // Петровича
+                instrumental: 'ем', // Петровичем
+                prepositional: 'е', // Петровиче
+            },
+            'female': {
+                nominative: '',    // Петровна
+                genitive: 'ы',     // Петровны
+                dative: 'е',       // Петровне
+                accusative: 'у',   // Петровну
+                instrumental: 'ой', // Петровной
+                prepositional: 'е', // Петровне
+            },
+        },
+    }
+
+    if (declensionRules[type][gender][padej]) {
+        let suffix = declensionRules[type][gender][padej]
+
+        if (type === 'name') {
+            if (['ий', 'ия'].includes(word.slice(-2)) && gender === 'male' && padej !== 'nominative') {
+                return `${word.slice(0, -2)}и${suffix}`
+            }
+            if (['ия'].includes(word.slice(-2)) && gender === 'female' && padej !== 'nominative') {
+                return `${word.slice(0, -1)}${suffix}`
+            }
+            if (['genitive', 'dative', 'instrumental', 'prepositional'].includes(padej) && ['й', 'ь'].includes(word.slice(-1))) {
+                return `${word.slice(0, -1)}${suffix}`
+            }
+        }
+
+        // Names ending with a consonant need to be softened in some cases
+        return word + suffix
+    }
+
+    return word
+}
+
 
 export const isNil = (value: unknown): value is Nil => value === undefined || value === null
-
-export const isDefined = <T>(value: T | Nil): value is T => !isNil(value)
-
-export const mergeInitValueWithPartialOpts = <T extends object>(partialOpts: Partial<T>, initOpts: T): T => Object.assign(Object.create(initOpts.constructor.prototype), { ...initOpts, ...partialOpts })

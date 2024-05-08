@@ -1,12 +1,11 @@
+import { ClassFields, Language, MeaningfulStringOpts, NumberOpts, PartNameOpts, StringOpts } from './types'
+import { ENGLISH_ALPHABET } from './constants'
+
 /**
  * initialization classes
  */
-
-import { ClassFields, Language, MeaningfulStringOpts, NumberOpts, PartNameOpts, StringOpts } from './types';
-import { ENGLISH_ALPHABET } from './constants';
-
 export class CPartNameOpts implements PartNameOpts {
-    gender: PartNameOpts['gender']= 'male'
+    gender: PartNameOpts['gender'] = 'male'
     type: PartNameOpts['type'] = 'surname'
     length: PartNameOpts['length'] = 'medium'
     language: PartNameOpts['language'] = 'en'

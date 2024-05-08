@@ -1,4 +1,3 @@
-
 export const SUFFIXES =
     [
         'age', 'al', 'ance', 'ence',

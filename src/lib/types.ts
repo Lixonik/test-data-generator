@@ -1,12 +1,4 @@
-import { Trie, TrieNode } from './trie/trie'
-
-export type CashedValues = {
-    cashedArrayForUUID: Uint8Array
-    tries: {
-        ru: Trie,
-        en: Trie
-    }
-}
+import { TrieNode } from './trie/trie'
 
 export type UUID = `${string}-${string}-${string}-${string}-${string}`
 
@@ -32,21 +24,6 @@ export type ClassFields<Model> = {
 }
 
 export type Case = 'nominative' | 'genitive' | 'dative' | 'accusative' | 'instrumental' | 'prepositional'
-
-export type NameData = {
-    male: {
-        small: string[]
-        medium: string[]
-        large: string[]
-        extra_large: string[]
-    };
-    female: {
-        small: string[]
-        medium: string[]
-        large: string[]
-        extra_large: string[]
-    };
-}
 
 export type StringOpts = {
     charSet: string[] | string // char set
