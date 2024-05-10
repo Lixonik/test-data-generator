@@ -107,8 +107,12 @@ export const declineWord = (word: string, type: PartNameOpts['type'], gender: Pa
                 return `${word.slice(0, -1)}${suffix}`
             }
         }
+        else if (type === 'surname') {
+            if (gender === 'female' && padej !== 'nominative') {
+                return word.slice(0, -1) + suffix
+            }
+        }
 
-        // Names ending with a consonant need to be softened in some cases
         return word + suffix
     }
 
