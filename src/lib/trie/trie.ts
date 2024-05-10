@@ -34,7 +34,9 @@ export class Trie {
         const stack: StackItem[] = [{ node: this.root, word: '', accumulatedLength: 0 }]
         const wordsArray: string[] = []
 
-        while (stack.length > 0 && wordsArray.join(separator).length < length) {
+        let lengthAccumulator = 0
+
+        while (stack.length > 0 && lengthAccumulator !== length) {
             const { node, word, accumulatedLength }: StackItem = stack.pop()!
 
             if (node.isEndOfWord) {
@@ -42,8 +44,7 @@ export class Trie {
 
                 if (newWord.length <= length) {
                     wordsArray.push(word)
-                } else {
-                    break
+                    lengthAccumulator = accumulatedLength
                 }
             }
 
@@ -53,12 +54,13 @@ export class Trie {
                 stack.push({
                     node: nextNode,
                     word: word + char,
-                    accumulatedLength: accumulatedLength + char.length,
+                    accumulatedLength: accumulatedLength + char.length + separator.length,
                 })
+
             }
         }
 
-        return wordsArray.join(separator).substring(0, length)
+        return wordsArray.join(separator)
     }
 
     private insertAllIntoOrigin(words: string[]) {
