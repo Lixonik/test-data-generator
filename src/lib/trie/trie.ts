@@ -45,6 +45,8 @@ export class Trie {
                 if (newWord.length <= length) {
                     wordsArray.push(word)
                     lengthAccumulator = accumulatedLength
+                } else {
+                    break
                 }
             }
 
