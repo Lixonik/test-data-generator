@@ -26,7 +26,7 @@ export type ClassFields<Model> = {
 export type Case = 'nominative' | 'genitive' | 'dative' | 'accusative' | 'instrumental' | 'prepositional'
 
 export type StringOpts = {
-    charSet: string[] | string // char set
+    charSet: string[] | string
     length: number
 }
 
