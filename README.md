@@ -75,15 +75,33 @@ type Case = 'nominative' | 'genitive' | 'dative' | 'accusative' | 'instrumental'
 
 #### *Installation*
 
-Via npm:
+##### *npm*
 
-```sh
+```shell
 npm i -D test-data-utils
+```
+
+##### *yarn*
+
+```shell
+yarn add --dev test-data-utils
+```
+
+##### *bun*
+
+```shell
+bun add --dev test-data-utils
+```
+
+##### *pnpm*
+
+```shell
+pnpm i --dev test-data-utils
 ```
 
 #### *import*
 
-##### via ES6 `import`:
+##### via `import`:
 
 ```ts
 import {
@@ -95,7 +113,7 @@ import {
 } from 'test-data-utils'
 ```
 
-##### via ES5 `require()`:
+##### via `require()`:
 
 ```ts
 const {
