@@ -1,6 +1,6 @@
 {
   "name": "test-data-utils",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "Generating data for testing on the frontend",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
